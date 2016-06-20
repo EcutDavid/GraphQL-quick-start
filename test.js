@@ -10,4 +10,4 @@ request
     } else {
       console.log(res.text)
     }
-});
+})
