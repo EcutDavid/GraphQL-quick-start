@@ -3,6 +3,8 @@ var graphql = require('graphql')
 var express = require('express')
 var graphqlHTTP = require('express-graphql')
 
+var data = require('./data.json')
+
 // Define the User type, each field has their own type.
 //description
 var userType = new graphql.GraphQLObjectType({
@@ -11,12 +13,20 @@ var userType = new graphql.GraphQLObjectType({
   fields: {
     id: { type: graphql.GraphQLString },
     name: { type: graphql.GraphQLString },
-    homeland: { type: graphql.GraphQLString }
+    homeland: { type: graphql.GraphQLString },
+    friend: {
+      type: graphql.GraphQLString,
+      args: {
+        id: { type: graphql.GraphQLString }
+      },
+      resolve: function (_, args) {
+        return data[args.id].name
+      }
+    }
   }
 })
 
 // Import the data you created above
-var data = require('./data.json')
 
 http://graphql.org/docs/api-reference-type-system/#graphqlschema
 var schema = new graphql.GraphQLSchema({
@@ -34,6 +44,12 @@ var schema = new graphql.GraphQLSchema({
         // the incoming query.
         resolve: function (_, args) {
           return data[args.id]
+        }
+      },
+      users: {
+        type: new graphql.GraphQLList(userType),
+        resolve: function () {
+          return [data['1'], data['2'], data['3']]
         }
       }
     }
